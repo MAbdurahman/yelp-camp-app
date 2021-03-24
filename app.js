@@ -40,14 +40,14 @@ app.get('/', (req, res) => {
 	res.statusCode = 200;
 	console.log('home request...');
 });
-app.get('/makecampground', async (req, res) => {
-   const camp = new Campground({
-      title: 'Backyard Camp',
-      description: 'Roughing it at home, under the stars.'
-   })
-   await camp.save();
-   res.send(camp);
+app.get('/campgrounds', async (req, res) => {
+	const campgrounds = await Campground.find({});
+   res.render('campgrounds/index', { campgrounds });
+	res.statusCode = 200;
+	console.log('campgrounds request...');
 });
+
+
 
 
 
