@@ -14,7 +14,7 @@ const port = process.env.Port || 3000;
 app.get('/', (req, res) => {
 	res.send(`<h1>yelp-camp-app</h1>`);
 	res.statusCode = 200;
-	console.log('add product request...');
+	console.log('yelp-camp-app request...');
 });
 
 
