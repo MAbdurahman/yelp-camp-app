@@ -61,6 +61,20 @@ app.get('/campgrounds/:id', async (req, res) => {
 	res.statusCode = 200;
 	console.log('campground id request...');
 });
+app.get('/campgrounds/:id/edit', async (req, res) => {
+	const { id } = req.params;
+	const campground = await Campground.findById(id);
+	res.render('campgrounds/edit', { campground });
+	res.statusCode = 200;
+	console.log('campground edit request...');
+});
+app.put('/campgrounds/:id', async (req, res) => {
+   const {id} = req.params;
+   const editedCampground = await Campground.findByIdAndUpdate(id, {...req.body.campground});
+   res.redirect(`/campgrounds/${editedCampground._id}`);
+   res.statusCode = 308;
+   console.log(`edit campground redirect...`);
+});
 
 //**************** app listening ****************//
 app.listen(port, () => {
