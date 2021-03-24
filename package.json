@@ -1,0 +1,29 @@
+{
+  "name": "yelp-camp-app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "start": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MAbdurahman/yelp-camp-app.git"
+  },
+  "author": "Mahdi Abdurrahman",
+  "license": "MIT",
+  "nodemonConfig": {
+    "delay": "2000"
+  },
+  "bugs": {
+    "url": "https://github.com/MAbdurahman/yelp-camp-app/issues"
+  },
+  "homepage": "https://github.com/MAbdurahman/yelp-camp-app#readme",
+  "dependencies": {
+    "ejs": "^3.1.6",
+    "express": "^4.17.1",
+    "method-override": "^3.0.0",
+    "mongoose": "^5.12.2"
+  }
+}
