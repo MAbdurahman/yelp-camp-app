@@ -10,21 +10,17 @@ const app = express();
 const port = process.env.Port || 3000;
 
 //**************** database connection ****************//
-mongoose
-	.connect('mongodb://localhost:27017/yelp-camp', {
-		useNewUrlParser: true,
-      useCreateIndex: true,
-		useUnifiedTopology: true,
-	});
+mongoose.connect('mongodb://localhost:27017/yelp-camp', {
+	useNewUrlParser: true,
+	useCreateIndex: true,
+	useUnifiedTopology: true,
+});
 
-   const db = mongoose.connection;
-	db.on('error', console.error.bind(console, 'connection error:'));
-	db.once('open', () => {
-		console.log('mongodb connected with mongoose...');
-	});
-
-
-
+const db = mongoose.connection;
+db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', () => {
+	console.log('mongodb connected with mongoose...');
+});
 
 //**************** app configurations ****************//
 // Views folder and EJS setup
@@ -42,23 +38,29 @@ app.get('/', (req, res) => {
 });
 app.get('/campgrounds', async (req, res) => {
 	const campgrounds = await Campground.find({});
-   res.render('campgrounds/index', { campgrounds });
+	res.render('campgrounds/index', { campgrounds });
 	res.statusCode = 200;
 	console.log('campgrounds request...');
 });
+app.get('/campgrounds/new', (req, res) => {
+	res.render('campgrounds/new');
+	res.statusCode = 200;
+	console.log('new campground request...');
+});
+app.post('/campgrounds', async (req, res) => {
+	const campground = new Campground(req.body.campground);
+   await campground.save();
+	res.redirect(`/campgrounds/${campground._id}`);
+	res.statusCode = 308;
+	console.log('new campground redirect...');
+});
 app.get('/campgrounds/:id', async (req, res) => {
-   const { id } =req.params;
+	const { id } = req.params;
 	const campground = await Campground.findById(id);
 	res.render('campgrounds/show', { campground });
 	res.statusCode = 200;
 	console.log('campground id request...');
 });
-
-
-
-
-
-
 
 //**************** app listening ****************//
 app.listen(port, () => {
