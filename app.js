@@ -46,6 +46,13 @@ app.get('/campgrounds', async (req, res) => {
 	res.statusCode = 200;
 	console.log('campgrounds request...');
 });
+app.get('/campgrounds/:id', async (req, res) => {
+   const { id } =req.params;
+	const campground = await Campground.findById(id);
+	res.render('campgrounds/show', { campground });
+	res.statusCode = 200;
+	console.log('campground id request...');
+});
 
 
 
