@@ -75,6 +75,14 @@ app.put('/campgrounds/:id', async (req, res) => {
    res.statusCode = 308;
    console.log(`edit campground redirect...`);
 });
+app.delete('/campgrounds/:id', async (req, res) => {
+   const {id} = req.params;
+   await Campground.findByIdAndDelete(id);
+   res.redirect('/campgrounds');
+   res.statusCode = 308;
+   console.log('delete campground redirect...');
+
+});
 
 //**************** app listening ****************//
 app.listen(port, () => {
