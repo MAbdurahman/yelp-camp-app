@@ -84,6 +84,7 @@ app.delete('/campgrounds/:id', async (req, res) => {
 
 });
 
+
 //**************** app listening ****************//
 app.listen(port, () => {
 	console.log(`app listening at http://localhost:${port}`);
