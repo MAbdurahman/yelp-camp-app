@@ -4,6 +4,7 @@ const path = require('path');
 const mongoose = require('mongoose');
 const methodOverride = require('method-override');
 const Campground = require('./models/campgrounds');
+const ejsMate = require('ejs-mate');
 
 //**************** variables ****************//
 const app = express();
@@ -21,11 +22,11 @@ db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', () => {
 	console.log('mongodb connected with mongoose...');
 });
-
 //**************** app configurations ****************//
-// Views folder and EJS setup
-app.set('views', path.join(__dirname, 'views'));
+// Views folder and EJS 
+app.engine('ejs', ejsMate);
 app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
 //**************** app middleware ****************//
 //To parse form data in POST request body:
 app.use(express.urlencoded({ extended: true }));
@@ -81,10 +82,7 @@ app.delete('/campgrounds/:id', async (req, res) => {
    res.redirect('/campgrounds');
    res.statusCode = 308;
    console.log('delete campground redirect...');
-
 });
-
-
 //**************** app listening ****************//
 app.listen(port, () => {
 	console.log(`app listening at http://localhost:${port}`);
