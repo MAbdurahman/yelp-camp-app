@@ -2,6 +2,7 @@
 const express = require('express');
 const path = require('path');
 const mongoose = require('mongoose');
+const morgan = require('morgan');
 const methodOverride = require('method-override');
 const Campground = require('./models/campgrounds');
 const ejsMate = require('ejs-mate');
@@ -30,6 +31,7 @@ app.set('views', path.join(__dirname, 'views'));
 //**************** app middleware ****************//
 //To parse form data in POST request body:
 app.use(express.urlencoded({ extended: true }));
+app.use(morgan('tiny'));
 app.use(methodOverride('_method'));
 //**************** app routes ****************//
 app.get('/', (req, res) => {
