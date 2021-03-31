@@ -7,6 +7,7 @@ const methodOverride = require('method-override');
 const Campground = require('./models/campgrounds');
 const ejsMate = require('ejs-mate');
 const catchAsync = require('./utils/catchAsync');
+const ExpressError = require('./utils/ExpressError');
 
 //**************** variables ****************//
 const app = express();
@@ -25,7 +26,7 @@ db.once('open', () => {
 	console.log('mongodb connected with mongoose...');
 });
 //**************** app configurations ****************//
-// Views folder and EJS 
+// Views folder and EJS
 app.engine('ejs', ejsMate);
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
@@ -40,57 +41,82 @@ app.get('/', (req, res) => {
 	res.statusCode = 200;
 	console.log('home request...');
 });
-app.get('/campgrounds', catchAsync(async (req, res) => {
-	const campgrounds = await Campground.find({});
-	res.render('campgrounds/index', { campgrounds });
-	res.statusCode = 200;
-	console.log('campgrounds request...');
-}));
+app.get(
+	'/campgrounds',
+	catchAsync(async (req, res) => {
+		const campgrounds = await Campground.find({});
+		res.render('campgrounds/index', { campgrounds });
+		res.statusCode = 200;
+		console.log('campgrounds request...');
+	})
+);
 app.get('/campgrounds/new', (req, res) => {
 	res.render('campgrounds/new');
 	res.statusCode = 200;
 	console.log('new campground request...');
 });
-app.post('/campgrounds', catchAsync(async (req, res, next) => {
-
+app.post(
+	'/campgrounds',
+	catchAsync(async (req, res, next) => {
+		if (!req.body.campground) {
+			throw new ExpressError('Invalid Campground Data!', 400);
+		}
 		const campground = new Campground(req.body.campground);
 		await campground.save();
 		res.redirect(`/campgrounds/${campground._id}`);
 		res.statusCode = 308;
 		console.log('new campground redirect...');
-	
-}));
-app.get('/campgrounds/:id', catchAsync(async (req, res) => {
-	const { id } = req.params;
-	const campground = await Campground.findById(id);
-	res.render('campgrounds/show', { campground });
-	res.statusCode = 200;
-	console.log('campground id request...');
-}));
-app.get('/campgrounds/:id/edit', catchAsync(async (req, res) => {
-	const { id } = req.params;
-	const campground = await Campground.findById(id);
-	res.render('campgrounds/edit', { campground });
-	res.statusCode = 200;
-	console.log('campground edit request...');
-}));
-app.put('/campgrounds/:id', catchAsync(async (req, res) => {
-   const {id} = req.params;
-   const editedCampground = await Campground.findByIdAndUpdate(id, {...req.body.campground});
-   res.redirect(`/campgrounds/${editedCampground._id}`);
-   res.statusCode = 308;
-   console.log(`edit campground redirect...`);
-}));
-app.delete('/campgrounds/:id', catchAsync(async (req, res) => {
-   const {id} = req.params;
-   await Campground.findByIdAndDelete(id);
-   res.redirect('/campgrounds');
-   res.statusCode = 308;
-   console.log('delete campground redirect...');
-}));
+	})
+);
+app.get(
+	'/campgrounds/:id',
+	catchAsync(async (req, res) => {
+		const { id } = req.params;
+		const campground = await Campground.findById(id);
+		res.render('campgrounds/show', { campground });
+		res.statusCode = 200;
+		console.log('campground id request...');
+	})
+);
+app.get(
+	'/campgrounds/:id/edit',
+	catchAsync(async (req, res) => {
+		const { id } = req.params;
+		const campground = await Campground.findById(id);
+		res.render('campgrounds/edit', { campground });
+		res.statusCode = 200;
+		console.log('campground edit request...');
+	})
+);
+app.put(
+	'/campgrounds/:id',
+	catchAsync(async (req, res) => {
+		const { id } = req.params;
+		const editedCampground = await Campground.findByIdAndUpdate(id, {
+			...req.body.campground,
+		});
+		res.redirect(`/campgrounds/${editedCampground._id}`);
+		res.statusCode = 308;
+		console.log(`edit campground redirect...`);
+	})
+);
+app.delete(
+	'/campgrounds/:id',
+	catchAsync(async (req, res) => {
+		const { id } = req.params;
+		await Campground.findByIdAndDelete(id);
+		res.redirect('/campgrounds');
+		res.statusCode = 308;
+		console.log('delete campground redirect...');
+	})
+);
+app.all('*', (req, res, next) => {
+	next(new ExpressError('Page Not Found', 404));
+});
 app.use((err, req, res, next) => {
-	res.send('An error has occurred!')
-})
+	const { statusCode = 500, message = 'A Malfunction Occurred!' } = err;
+	res.status(statusCode).send(message);
+});
 //**************** app listening ****************//
 app.listen(port, () => {
 	console.log(`app listening at http://localhost:${port}`);
