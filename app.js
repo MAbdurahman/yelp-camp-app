@@ -6,6 +6,7 @@ const morgan = require('morgan');
 const methodOverride = require('method-override');
 const Campground = require('./models/campgrounds');
 const ejsMate = require('ejs-mate');
+const catchAsync = require('./utils/catchAsync');
 
 //**************** variables ****************//
 const app = express();
@@ -39,57 +40,54 @@ app.get('/', (req, res) => {
 	res.statusCode = 200;
 	console.log('home request...');
 });
-app.get('/campgrounds', async (req, res) => {
+app.get('/campgrounds', catchAsync(async (req, res) => {
 	const campgrounds = await Campground.find({});
 	res.render('campgrounds/index', { campgrounds });
 	res.statusCode = 200;
 	console.log('campgrounds request...');
-});
+}));
 app.get('/campgrounds/new', (req, res) => {
 	res.render('campgrounds/new');
 	res.statusCode = 200;
 	console.log('new campground request...');
 });
-app.post('/campgrounds', async (req, res, next) => {
-	try {
+app.post('/campgrounds', catchAsync(async (req, res, next) => {
+
 		const campground = new Campground(req.body.campground);
 		await campground.save();
 		res.redirect(`/campgrounds/${campground._id}`);
 		res.statusCode = 308;
 		console.log('new campground redirect...');
-	} catch (error) {
-		next(error);
-	}
 	
-});
-app.get('/campgrounds/:id', async (req, res) => {
+}));
+app.get('/campgrounds/:id', catchAsync(async (req, res) => {
 	const { id } = req.params;
 	const campground = await Campground.findById(id);
 	res.render('campgrounds/show', { campground });
 	res.statusCode = 200;
 	console.log('campground id request...');
-});
-app.get('/campgrounds/:id/edit', async (req, res) => {
+}));
+app.get('/campgrounds/:id/edit', catchAsync(async (req, res) => {
 	const { id } = req.params;
 	const campground = await Campground.findById(id);
 	res.render('campgrounds/edit', { campground });
 	res.statusCode = 200;
 	console.log('campground edit request...');
-});
-app.put('/campgrounds/:id', async (req, res) => {
+}));
+app.put('/campgrounds/:id', catchAsync(async (req, res) => {
    const {id} = req.params;
    const editedCampground = await Campground.findByIdAndUpdate(id, {...req.body.campground});
    res.redirect(`/campgrounds/${editedCampground._id}`);
    res.statusCode = 308;
    console.log(`edit campground redirect...`);
-});
-app.delete('/campgrounds/:id', async (req, res) => {
+}));
+app.delete('/campgrounds/:id', catchAsync(async (req, res) => {
    const {id} = req.params;
    await Campground.findByIdAndDelete(id);
    res.redirect('/campgrounds');
    res.statusCode = 308;
    console.log('delete campground redirect...');
-});
+}));
 app.use((err, req, res, next) => {
 	res.send('An error has occurred!')
 })
