@@ -50,12 +50,17 @@ app.get('/campgrounds/new', (req, res) => {
 	res.statusCode = 200;
 	console.log('new campground request...');
 });
-app.post('/campgrounds', async (req, res) => {
-	const campground = new Campground(req.body.campground);
-   await campground.save();
-	res.redirect(`/campgrounds/${campground._id}`);
-	res.statusCode = 308;
-	console.log('new campground redirect...');
+app.post('/campgrounds', async (req, res, next) => {
+	try {
+		const campground = new Campground(req.body.campground);
+		await campground.save();
+		res.redirect(`/campgrounds/${campground._id}`);
+		res.statusCode = 308;
+		console.log('new campground redirect...');
+	} catch (error) {
+		next(error);
+	}
+	
 });
 app.get('/campgrounds/:id', async (req, res) => {
 	const { id } = req.params;
@@ -85,6 +90,9 @@ app.delete('/campgrounds/:id', async (req, res) => {
    res.statusCode = 308;
    console.log('delete campground redirect...');
 });
+app.use((err, req, res, next) => {
+	res.send('An error has occurred!')
+})
 //**************** app listening ****************//
 app.listen(port, () => {
 	console.log(`app listening at http://localhost:${port}`);
