@@ -114,8 +114,11 @@ app.all('*', (req, res, next) => {
 	next(new ExpressError('Page Not Found', 404));
 });
 app.use((err, req, res, next) => {
-	const { statusCode = 500, message = 'A Malfunction Occurred!' } = err;
-	res.status(statusCode).send(message);
+	const { statusCode = 500 } = err;
+	if (!err.message) {
+		err.message = 'A Malfunction Error Occurred!';
+	}
+	res.status(statusCode).render('error', {err});
 });
 //**************** app listening ****************//
 app.listen(port, () => {
