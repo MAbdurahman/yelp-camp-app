@@ -64,7 +64,7 @@ const validateReview = (req, res, next) => {
 app.get('/', (req, res) => {
 	res.render('home');
 	res.statusCode = 200;
-	console.log('home request...');
+
 });
 app.get(
 	'/campgrounds',
@@ -72,13 +72,13 @@ app.get(
 		const campgrounds = await Campground.find({});
 		res.render('campgrounds/index', { campgrounds });
 		res.statusCode = 200;
-		console.log('campgrounds request...');
+	
 	})
 );
 app.get('/campgrounds/new', (req, res) => {
 	res.render('campgrounds/new');
 	res.statusCode = 200;
-	console.log('new campground request...');
+
 });
 app.post(
 	'/campgrounds', validateCampground,
@@ -89,17 +89,16 @@ app.post(
 		await campground.save();
 		res.redirect(`/campgrounds/${campground._id}`);
 		res.statusCode = 308;
-		console.log('new campground redirect...');
 	})
 );
 app.get(
 	'/campgrounds/:id',
 	catchAsync(async (req, res) => {
 		const { id } = req.params;
-		const campground = await Campground.findById(id);
+		const campground = await Campground.findById(id).populate('reviews');
 		res.render('campgrounds/show', { campground });
 		res.statusCode = 200;
-		console.log('campground id request...');
+
 	})
 );
 app.get(
@@ -109,7 +108,7 @@ app.get(
 		const campground = await Campground.findById(id);
 		res.render('campgrounds/edit', { campground });
 		res.statusCode = 200;
-		console.log('campground edit request...');
+
 	})
 );
 app.put(
@@ -121,7 +120,7 @@ app.put(
 		});
 		res.redirect(`/campgrounds/${editedCampground._id}`);
 		res.statusCode = 308;
-		console.log(`edit campground redirect...`);
+	
 	})
 );
 app.delete(
@@ -131,7 +130,7 @@ app.delete(
 		await Campground.findByIdAndDelete(id);
 		res.redirect('/campgrounds');
 		res.statusCode = 308;
-		console.log('delete campground redirect...');
+	
 	})
 );
 app.post('/campgrounds/:id/reviews', validateReview, catchAsync(async(req, res) => {
