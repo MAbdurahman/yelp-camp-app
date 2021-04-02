@@ -9,6 +9,7 @@ const Campground = require('./models/campgrounds');
 const ejsMate = require('ejs-mate');
 const catchAsync = require('./utils/catchAsync');
 const ExpressError = require('./utils/ExpressError');
+const Review = require('./models/review');
 
 //**************** variables ****************//
 const app = express();
@@ -122,6 +123,15 @@ app.delete(
 		console.log('delete campground redirect...');
 	})
 );
+app.post('/campgrounds/:id/reviews', catchAsync(async(req, res) => {
+	const campground = await Campground.findById(req.params.id);
+	const review = new Review(req.body.review);
+	campground.reviews.push(review);
+	await review.save();
+	await campground.save();
+	res.redirect(`/campgrounds/${campground._id}`);
+	
+}));
 app.all('*', (req, res, next) => {
 	next(new ExpressError('Page Not Found', 404));
 });
