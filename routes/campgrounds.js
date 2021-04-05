@@ -7,10 +7,6 @@ const { campgroundSchema } = require('../schemas');
 //**************** variables ****************//
 const router = express.Router();
 
-
-
-
-
 //**************** helper functions ****************//
 const validateCampground = (req, res, next) => {
 	const { error } = campgroundSchema.validate(req.body);
@@ -41,7 +37,7 @@ router.post(
 	catchAsync(async (req, res, next) => {
 		const campground = new Campground(req.body.campground);
 		await campground.save();
-      req.flash('success', 'New Campground successfully made!');
+		req.flash('success', 'New Campground successfully made!');
 		res.redirect(`/campgrounds/${campground._id}`);
 		res.statusCode = 308;
 	})
@@ -72,6 +68,7 @@ router.put(
 		const editedCampground = await Campground.findByIdAndUpdate(id, {
 			...req.body.campground,
 		});
+		req.flash('success', 'Campground successfully updated!');
 		res.redirect(`/campgrounds/${editedCampground._id}`);
 		res.statusCode = 308;
 	})
@@ -81,6 +78,7 @@ router.delete(
 	catchAsync(async (req, res) => {
 		const { id } = req.params;
 		await Campground.findByIdAndDelete(id);
+		req.flash('success', 'Successfully deleted campground');
 		res.redirect('/campgrounds');
 		res.statusCode = 308;
 	})
