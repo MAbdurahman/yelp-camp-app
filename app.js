@@ -2,15 +2,12 @@
 const express = require('express');
 const path = require('path');
 const mongoose = require('mongoose');
-const morgan = require('morgan');
-const methodOverride = require('method-override');
-const { campgroundSchema, reviewSchema } = require('./schemas');
 const ejsMate = require('ejs-mate');
+const morgan = require('morgan');
 const session = require('express-session');
 const flash = require('connect-flash');
+const methodOverride = require('method-override');
 const ExpressError = require('./utils/ExpressError');
-const Review = require('./models/review');
-
 const campgrounds = require('./routes/campgrounds');
 const reviews = require('./routes/reviews');
 

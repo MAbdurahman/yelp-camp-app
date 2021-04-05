@@ -1,9 +1,9 @@
 //**************** imports ****************//
 const express = require('express');
-const Campground = require('../models/campgrounds');
 const catchAsync = require('../utils/catchAsync');
-const ExpressError = require('../utils/ExpressError');
 const { campgroundSchema } = require('../schemas');
+const ExpressError = require('../utils/ExpressError');
+const Campground = require('../models/campgrounds');
 //**************** variables ****************//
 const router = express.Router();
 
@@ -17,7 +17,6 @@ const validateCampground = (req, res, next) => {
 		next();
 	}
 };
-
 //**************** campgrounds routes ****************//
 router.get(
 	'/',
@@ -47,6 +46,10 @@ router.get(
 	catchAsync(async (req, res) => {
 		const { id } = req.params;
 		const campground = await Campground.findById(id).populate('reviews');
+		if (!campground) {
+			req.flash('error', 'Cannot find that campground!');
+			return res.redirect('/campgrounds');
+		}
 		res.render('campgrounds/show', { campground });
 		res.statusCode = 200;
 	})
@@ -56,6 +59,10 @@ router.get(
 	catchAsync(async (req, res) => {
 		const { id } = req.params;
 		const campground = await Campground.findById(id);
+		if (!campground) {
+			req.flash('error', 'Cannot find that campground!');
+			return res.redirect('/campgrounds');
+		}
 		res.render('campgrounds/edit', { campground });
 		res.statusCode = 200;
 	})

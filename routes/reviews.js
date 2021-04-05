@@ -3,9 +3,8 @@ const express = require('express');
 const Campground = require('../models/campgrounds');
 const Review = require('../models/review');
 const { reviewSchema } = require('../schemas');
-const catchAsync = require('../utils/catchAsync');
 const ExpressError = require('../utils/ExpressError');
-
+const catchAsync = require('../utils/catchAsync');
 //**************** variables ****************//
 const router = express.Router({ mergeParams: true });
 
@@ -19,7 +18,6 @@ const validateReview = (req, res, next) => {
 		next();
 	}
 };
-
 //**************** reviews routes ****************//
 router.post(
 	'/',
@@ -30,7 +28,7 @@ router.post(
 		campground.reviews.push(review);
 		await review.save();
 		await campground.save();
-		req.flash('success', 'Created new review!');
+		req.flash('success', 'Created a new review!');
 		res.redirect(`/campgrounds/${campground._id}`);
 	})
 );
