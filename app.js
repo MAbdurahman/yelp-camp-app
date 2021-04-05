@@ -7,6 +7,7 @@ const methodOverride = require('method-override');
 const { campgroundSchema, reviewSchema } = require('./schemas');
 const ejsMate = require('ejs-mate');
 const session = require('express-session');
+const flash = require('connect-flash');
 const ExpressError = require('./utils/ExpressError');
 const Review = require('./models/review');
 
@@ -53,6 +54,12 @@ app.use(morgan('tiny'));
 app.use(methodOverride('_method'));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(session(sessionConfig));
+app.use(flash());
+app.use((req, res, next) => {
+	res.locals.success = req.flash('success');
+	res.locals.error = req.flash('error');
+	next();
+})
 app.use('/campgrounds', campgrounds);
 app.use('/campgrounds/:id/reviews', reviews);
 //**************** app routes ****************//
