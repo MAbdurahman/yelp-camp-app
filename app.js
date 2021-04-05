@@ -6,6 +6,7 @@ const morgan = require('morgan');
 const methodOverride = require('method-override');
 const { campgroundSchema, reviewSchema } = require('./schemas');
 const ejsMate = require('ejs-mate');
+const session = require('express-session');
 const ExpressError = require('./utils/ExpressError');
 const Review = require('./models/review');
 
@@ -15,6 +16,17 @@ const reviews = require('./routes/reviews');
 //**************** variables ****************//
 const app = express();
 const port = process.env.Port || 3000;
+const sessionConfig = {
+	secret: 'thisshouldbeabettersecret',
+	resave: false,
+	saveUninitialized: true,
+	cookie: {
+		httpOnly: true,
+		// secure: true,
+		expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
+		maxAge: 1000 * 60 * 60 * 24 * 7,
+	},
+};
 
 //**************** database connection ****************//
 mongoose.connect('mongodb://localhost:27017/yelp-camp', {
@@ -40,6 +52,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(morgan('tiny'));
 app.use(methodOverride('_method'));
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(session(sessionConfig));
 app.use('/campgrounds', campgrounds);
 app.use('/campgrounds/:id/reviews', reviews);
 //**************** app routes ****************//
