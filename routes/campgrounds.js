@@ -1,23 +1,41 @@
 //**************** imports ****************//
 const express = require('express');
+const Campground = require('../models/campgrounds');
+const catchAsync = require('../utils/catchAsync');
+const ExpressError = require('../utils/ExpressError');
 //**************** variables ****************//
-const r = express.Router();
+const router = express.Router();
+
+
+
+
+
+//**************** helper functions ****************//
+const validateCampground = (req, res, next) => {
+	const { error } = campgroundSchema.validate(req.body);
+	if (error) {
+		const msg = error.details.map(el => el.message).join(',');
+		throw new ExpressError(msg, 400);
+	} else {
+		next();
+	}
+};
 
 //**************** campgrounds routes ****************//
 router.get(
-	'/campgrounds',
+	'/',
 	catchAsync(async (req, res) => {
 		const campgrounds = await Campground.find({});
 		res.render('campgrounds/index', { campgrounds });
 		res.statusCode = 200;
 	})
 );
-router.get('/campgrounds/new', (req, res) => {
+router.get('/new', (req, res) => {
 	res.render('campgrounds/new');
 	res.statusCode = 200;
 });
 router.post(
-	'/campgrounds',
+	'/',
 	validateCampground,
 	catchAsync(async (req, res, next) => {
 		const campground = new Campground(req.body.campground);
@@ -27,7 +45,7 @@ router.post(
 	})
 );
 router.get(
-	'/campgrounds/:id',
+	'/:id',
 	catchAsync(async (req, res) => {
 		const { id } = req.params;
 		const campground = await Campground.findById(id).populate('reviews');
@@ -36,7 +54,7 @@ router.get(
 	})
 );
 router.get(
-	'/campgrounds/:id/edit',
+	'/:id/edit',
 	catchAsync(async (req, res) => {
 		const { id } = req.params;
 		const campground = await Campground.findById(id);
@@ -45,7 +63,7 @@ router.get(
 	})
 );
 router.put(
-	'/campgrounds/:id',
+	'/:id',
 	validateCampground,
 	catchAsync(async (req, res) => {
 		const { id } = req.params;
@@ -57,7 +75,7 @@ router.put(
 	})
 );
 router.delete(
-	'/campgrounds/:id',
+	'/:id',
 	catchAsync(async (req, res) => {
 		const { id } = req.params;
 		await Campground.findByIdAndDelete(id);
@@ -65,3 +83,5 @@ router.delete(
 		res.statusCode = 308;
 	})
 );
+
+module.exports = router;

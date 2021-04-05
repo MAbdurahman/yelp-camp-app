@@ -11,6 +11,8 @@ const catchAsync = require('./utils/catchAsync');
 const ExpressError = require('./utils/ExpressError');
 const Review = require('./models/review');
 
+const campgrounds = require('./routes/campgrounds');
+
 //**************** variables ****************//
 const app = express();
 const port = process.env.Port || 3000;
@@ -38,17 +40,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(morgan('tiny'));
 app.use(methodOverride('_method'));
 //**************** app helper functions ****************//
-const validateCampground = (req, res, next) => {
 
-	const { error } = campgroundSchema.validate(req.body);
-	if (error) {
-		const msg = error.details.map(el => el.message).join(',');
-		throw new ExpressError(msg, 400);
-
-	} else {
-		next();
-	}
-}
 
 const validateReview = (req, res, next) => {
 	const { error } = reviewSchema.validate(req.body);
@@ -61,6 +53,8 @@ const validateReview = (req, res, next) => {
 
 }
 //**************** app routes ****************//
+app.use('/campgrounds', campgrounds);
+
 app.get('/', (req, res) => {
 	res.render('home');
 	res.statusCode = 200;
